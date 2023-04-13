@@ -5,7 +5,7 @@ clients = []
 
 def main():
 
-    # cria um objeto de socket
+    # cria um objeto de socket (IPV4/TCP)
     server = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
 
     try:
@@ -37,20 +37,29 @@ def messagesTreatment(client):
         except:
             # remove o cliente da lista de clientes ao fechar a conexão ou dar erro de conexão com o cliente
 
-            
             deleteClient(client)
             break
 
 # função para enviar uma mensagem para todos os outros clientes conectados
 def broadcast(msg, client):
-    for clientItem in clients:
-        if clientItem != client:
-            try:
-                # envia a mensagem para o cliente
-                clientItem.send(msg)
-            except:
-                # remove o cliente da lista de clientes conectados se houver um erro no envio da mensagem
-                deleteClient(clientItem)
+    if msg.startswith("ERROR"):
+        # envia a mensagem de erro para o cliente que enviou a mensagem
+        try:
+            client.send(msg.encode())
+        except:
+            # remove o cliente da lista de clientes conectados se houver um erro no envio da mensagem
+            deleteClient(client)
+    else:
+        # envia a mensagem para todos os outros clientes conectados
+        for clientItem in clients:
+            if clientItem != client:
+                try:
+                    # envia a mensagem para o cliente
+                    clientItem.send(msg)
+                except:
+                    # remove o cliente da lista de clientes conectados se houver um erro no envio da mensagem
+                    deleteClient(clientItem)
+
 
 # função para remover um cliente da lista de clientes conectados
 def deleteClient(client):
