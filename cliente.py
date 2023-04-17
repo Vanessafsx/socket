@@ -19,29 +19,31 @@ def sendMessages():
     while True:
         try:
             # Solicitando ao usuário que digite a mensagem
-            method = int(input('Escolha uma opção\n 1- GET \n 2- POST \n 3-DELETE'))
+            method = int(input('Escolha uma opção\n 1- Exibir produtos da lista \n 2- Adicionar produto \n 3- Deletar um produto\n 4- Sair\n'))
             if(method == 1):
                 request = {'method': 'GET'}
                 response = mensagem(request)
-                print(response)
+                print(response, '\n')
             elif(method == 2):
-                nome = input('Digite nome do produto:')
-                preço = input('Digite preço do produto')
+                nome = input('Digite nome do produto:\n')
+                preço = input('Digite preço do produto:\n')
                 msg = {'nome': nome, 'preço': preço}
                 request = {'method': 'POST', 'mensagem': msg}
                 response = mensagem(request)
-                print(response)
+                print(response, '\n')
             elif(method == 3):
-                id = int(input('Digite o id do item para deletar'))
+                id = int(input('Digite o id do item para deletar:\n'))
                 msg = {'id': id}
-                request = {'method': 'POST', 'mensagem': msg}
+                request = {'method': 'DELETE', 'mensagem': msg}
                 response = mensagem(request)
-                print(response)
+                print(response, '\n')
+            elif(method == 4):
+                break
             else:
                 # Enviando a mensagem para o servidor com o nome de usuário do cliente
                 print({'statusCode': '400' , 'msg' : 'BadRequest'})
         except:
-            # Caso ocorra erro na conexão, finaliza o cliente e sai da função
+            # Caso ocorra erro na conexão, finaliza o DELEcliente e sai da função
             return
 
 
