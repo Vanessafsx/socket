@@ -1,54 +1,48 @@
 import threading
 import socket
+import json
 
-# Função principal
-def main():
-    # Criando o socket do cliente (IPV4/TCP)
-    client = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
+# Criando o socket do cliente (IPV4/TCP)
+client = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
 
-    try:
-        # Tentando conectar ao servidor
-        client.connect(('localhost', 3000))
-    except:
-        return print('\nNão foi possível se conectar ao servidor!\n')
+client.connect(('localhost', 3000))
 
-    # Solicitando o nome de usuário do cliente
-    username = input('Usuário>')
-    print('Conectado')
-
-    # Inicializando as threads para receber e enviar mensagens
-    thread1 = threading.Thread(target=receiveMessages, args=[client])
-    thread2 = threading.Thread(target=sendMessages, args=[client, username])
-
-    # Iniciando as threads
-    thread1.start()
-    thread2.start()
-
-# Thread para receber mensagens
-def receiveMessages(client):
-    #enquanto servidor estiver conectado está mandando algo para cliente
-    while True:
-        try:
-            # Recebendo a mensagem do servidor
-            msg = client.recv(2048).decode('utf-8')
-            print(msg+'\n')
-        except:
-            # Caso ocorra erro na conexão, finaliza o cliente, será desconectado
-            print('\nNão foi possível se conectar com o servidor! Tecle <Enter>\n')
-            client.close()
-            break
+def mensagem(msg):
+    json_mensagem = json.dumps(msg)
+    client.sendall(json_mensagem.encode())
+    data = client.recv(1024).decode('utf-8')
+    msg = json.loads(data)
+    return msg
 
 # Thread para enviar mensagens
-def sendMessages(client, username):
+def sendMessages():
     while True:
         try:
             # Solicitando ao usuário que digite a mensagem
-            msg = input('\n')
-            # Enviando a mensagem para o servidor com o nome de usuário do cliente
-            client.send(f'<{username}> {msg}'.encode('utf-8'))
+            method = int(input('Escolha uma opção\n 1- GET \n 2- POST \n 3-DELETE'))
+            if(method == 1):
+                request = {'method': 'GET'}
+                response = mensagem(request)
+                print(response)
+            elif(method == 2):
+                nome = input('Digite nome do produto:')
+                preço = input('Digite preço do produto')
+                msg = {'nome': nome, 'preço': preço}
+                request = {'method': 'POST', 'mensagem': msg}
+                response = mensagem(request)
+                print(response)
+            elif(method == 3):
+                id = int(input('Digite o id do item para deletar'))
+                msg = {'id': id}
+                request = {'method': 'POST', 'mensagem': msg}
+                response = mensagem(request)
+                print(response)
+            else:
+                # Enviando a mensagem para o servidor com o nome de usuário do cliente
+                print({'statusCode': '400' , 'msg' : 'BadRequest'})
         except:
             # Caso ocorra erro na conexão, finaliza o cliente e sai da função
             return
 
-# Iniciando a função principal
-main()
+
+sendMessages()
