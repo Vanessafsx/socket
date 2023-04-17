@@ -40,10 +40,10 @@ def sendMessages():
             elif(method == 4):
                 break
             else:
-                # Enviando a mensagem para o servidor com o nome de usuário do cliente
+                # Enviando a mensagem para o servidor 
                 print({'statusCode': '400' , 'msg' : 'BadRequest'})
         except:
-            # Caso ocorra erro na conexão, finaliza o DELEcliente e sai da função
+            # Caso ocorra erro na conexão, finaliza e sai da função
             return
 
 
